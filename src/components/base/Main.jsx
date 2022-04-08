@@ -71,7 +71,7 @@ class Main extends React.Component {
 
         localStorage.setItem('contracts', JSON.stringify(contracts))
 
-        // setTimeout(() => window.location.reload(), 1000)
+        setTimeout(() => window.location.reload(), 1000)
     }
 
     onCancel () {
