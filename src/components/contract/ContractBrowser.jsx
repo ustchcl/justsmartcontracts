@@ -110,8 +110,10 @@ class ContractBrowser extends React.Component {
 
     render() {
         return (
-            <Row>
-                <Col span={gridConfig.ContractListSpan} style={{ marginTop: '50px' }}>
+            <Row style={{maxHeight: "100%"}}>
+                <Col span={gridConfig.ContractListSpan} style={{ 
+                    marginTop: '20px',
+                }}>
                     <ContractList
                         contracts={this.state.contractList.filter(
                             (contract) => contract.networkId === this.props.networkId

@@ -6,11 +6,13 @@
 }
 
 .content {    
-    min-height: 800px;    
+    min-height: 800px;  
+    // height: calc(100% - 160px);  
 }
 
 .footer {
-    background-color: #003a8c;
-    height: 100 px;
-    
+    background-color: #1890ff;
+    height: 60px;
+    color: white;
+    margin-top: 20px;
 }

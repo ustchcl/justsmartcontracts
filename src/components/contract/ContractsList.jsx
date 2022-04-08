@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, List, Card, Modal } from 'antd';
+import { Button, List, Card, Modal, Input } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import Blockies from 'react-blockies';
 import { shortenEthAddress } from '../../scripts/utils.js';
@@ -13,12 +13,13 @@ import styles from './ContractsList.scss';
  * List of stored contracts located in the side panel
  */
 class ContractsList extends React.Component {
-    constructor(props) {
+    constructor (props) {
         super(props);
         this.state = {
             contractToEdit: null,
             modalVisible: false,
             modalConfirmationVisible: false,
+            searchValue: ""
         };
         this.startAddContract = this.startAddContract.bind(this);
         this.closeModal = this.closeModal.bind(this);
@@ -31,32 +32,32 @@ class ContractsList extends React.Component {
         this.startEdit = this.startEdit.bind(this);
     }
 
-    startAddContract() {
+    startAddContract () {
         this.setState({
             contractToEdit: null,
             modalVisible: true,
         });
     }
 
-    closeModal() {
+    closeModal () {
         this.setState({
             modalVisible: false,
         });
     }
 
-    showConfirmationModal() {
+    showConfirmationModal () {
         this.setState({
             modalConfirmationVisible: true,
         });
     }
 
-    closeConfirmationModal() {
+    closeConfirmationModal () {
         this.setState({
             modalConfirmationVisible: false,
         });
     }
 
-    handleAddButton(name, address, networkId, abi) {
+    handleAddButton (name, address, networkId, abi) {
         this.closeModal();
         if (this.state.contractToEdit) {
             this.props.onEditContract(this.state.contractToEdit, name, address, networkId, abi);
@@ -65,7 +66,7 @@ class ContractsList extends React.Component {
         }
     }
 
-    handleDeleteButton(e, networkId, name) {
+    handleDeleteButton (e, networkId, name) {
         this.setState({
             deletingContract: { id: networkId, name: name },
         });
@@ -73,19 +74,23 @@ class ContractsList extends React.Component {
         e.stopPropagation();
     }
 
-    onConfirmedDelete() {
+    onConfirmedDelete () {
         this.props.onDeleteContract(this.state.deletingContract.id, this.state.deletingContract.name);
         this.closeConfirmationModal();
     }
 
-    startEdit(contract) {
+    startEdit (contract) {
         this.setState({
             contractToEdit: contract,
             modalVisible: true,
         });
     }
 
-    renderCardControls(contract) {
+    onSearch(value) {
+        this.setState({searchValue: value})
+    }
+
+    renderCardControls (contract) {
         return (
             <>
                 <Blockies seed={contract.address.toLowerCase()} />
@@ -106,12 +111,16 @@ class ContractsList extends React.Component {
         );
     }
 
-    render() {
+    render () {
         const isSelected = (contract) =>
             this.props.activeContract && this.props.activeContract.address == contract.address;
 
+        const searchReg = new RegExp(this.state.searchValue, "i")
+
         return (
-            <>
+            <div style={{
+                maxHeight: "100%"
+            }}>
                 <div>
                     <Modal
                         visible={this.state.modalVisible}
@@ -123,26 +132,40 @@ class ContractsList extends React.Component {
                         <ContractForm onAddContract={this.handleAddButton} contract={this.state.contractToEdit} />
                     </Modal>
                 </div>
-                <List>
-                    {this.props.contracts.map((contract) => (
-                        <Card
-                            size="small"
-                            onClick={() => this.props.onChangeContract(contract.name)}
-                            className={classnames({
-                                [styles.selectedContract]: isSelected(contract),
-                                [styles.contractCard]: true,
-                            })}
-                            key={contract.address}
-                            extra={this.renderCardControls(contract)}
-                        >
-                            <Card.Meta
-                                className={styles.cardMeta}
-                                title={contract.name}
-                                description={shortenEthAddress(contract.address, 4)}
-                            />
-                        </Card>
-                    ))}
-                </List>
+                <div>
+                    <Input.Search
+                        placeholder="输入合约名称"
+                        allowClear
+                        onSearch={this.onSearch.bind(this)}
+                    />
+                </div>
+                <div style={{
+                    maxHeight: "70vh",
+                    height: "calc(100% - 320px)",
+                    overflowY: "auto",
+                    marginTop: "10px",
+                }}>
+                    <List>
+                        {this.props.contracts.filter(x => searchReg.test(x.name)).map((contract) => (
+                            <Card
+                                size="small"
+                                onClick={() => this.props.onChangeContract(contract.name)}
+                                className={classnames({
+                                    [styles.selectedContract]: isSelected(contract),
+                                    [styles.contractCard]: true,
+                                })}
+                                key={contract.address}
+                                extra={this.renderCardControls(contract)}
+                            >
+                                <Card.Meta
+                                    className={styles.cardMeta}
+                                    title={contract.name}
+                                    description={shortenEthAddress(contract.address, 4)}
+                                />
+                            </Card>
+                        ))}
+                    </List>
+                </div>
                 <div>
                     <Button type="primary" className={styles.addButton} onClick={this.startAddContract}>
                         Add contract
@@ -156,7 +179,7 @@ class ContractsList extends React.Component {
                 >
                     <p>{`Really delete '${this.state.deletingContract ? this.state.deletingContract.name : ''}'?`}</p>
                 </Modal>
-            </>
+            </div>
         );
     }
 }

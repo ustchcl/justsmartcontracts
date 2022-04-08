@@ -17,10 +17,10 @@ class Header extends React.Component {
                         <NavLink to='/'>JustSmartContracts</NavLink>
                     </p>
                 </Col>
-                <Col span={6} push={5}>
+                {/* <Col span={6} push={5}>
                     <NavLink className={styles.navlink} to='/'>Home</NavLink>
                     <NavLink className={styles.navlink} to='/about'>What is it?</NavLink>
-                </Col>
+                </Col> */}
             </Row>
         );
     }

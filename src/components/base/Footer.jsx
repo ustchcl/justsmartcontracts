@@ -13,7 +13,7 @@ class Footer extends React.Component {
     render() {
         return (
             <>
-                <Row>
+                {/* <Row>
                     <Col span={6} offset={0}>
                         <p className={styles.sectionHeader}>Contacts</p>
                         <p><a target='_blank' href={config.contacts.github} className={styles.contactsLink}>Github</a></p>
@@ -34,7 +34,7 @@ class Footer extends React.Component {
                         <NavLink to='/privacy' className={styles.legalLink}>Privacy</NavLink>
                         <NavLink to='/terms' className={styles.legalLink}>Terms of use</NavLink>
                     </Col>
-                </Row>
+                </Row> */}
             </>
         );
     }
