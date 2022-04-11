@@ -7,3 +7,4 @@
 ~*
 *.zip
 *.LICENSE.txt
+.env

@@ -1,6 +1,7 @@
 var path = require('path');
 const fs = require('fs');
 const webpack = require('webpack');
+const Dotenv = require('dotenv-webpack');
 
 const lessToJs = require('less-vars-to-js');
 const themeVariables = lessToJs(fs.readFileSync(path.join(__dirname, './ant-override.less'), 'utf8'));
@@ -44,6 +45,7 @@ module.exports = {
         new webpack.ProvidePlugin({
             process: 'process/browser',
         }),
+        new Dotenv()
     ],
 
     mode: 'development',

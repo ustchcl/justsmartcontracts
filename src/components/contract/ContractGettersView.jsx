@@ -90,7 +90,7 @@ class ContractGettersView extends React.Component {
     render() {
         //select only constant methods with parameters
         let methods = this.props.contract._jsonInterface.filter(
-            item => item.constant === true && item.inputs.length > 0
+            item => (item.stateMutability === "pure" || item.stateMutability === "view") && item.inputs.length > 0
         );
 
         return (

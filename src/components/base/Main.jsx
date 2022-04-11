@@ -16,9 +16,9 @@ class Main extends React.Component {
     state = {
         isModalVisible: false,
         files: [],
-        networkId: "1337",
-        rpcUrl: "http://43.154.239.90:8545",
-        networkName: "1337",
+        networkId: process.env.REACT_APP_NETWORK_ID,
+        rpcUrl: process.env.REACT_APP_RPC_URL,
+        networkName: process.env.REACT_APP_NETWORK_ID,
     }
 
     constructor (props) {

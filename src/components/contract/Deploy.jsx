@@ -69,7 +69,7 @@ class Deploy extends React.Component {
 
             return <FunctionInputs
                 inputs={ctor ? ctor.inputs : []}
-                ethInput={ctor ? ctor.payable : false}
+                ethInput={ctor ? ctor.stateMutability === "payable" : false}
                 button='Generate'
                 onClick={this.handleInputsClick}
             />

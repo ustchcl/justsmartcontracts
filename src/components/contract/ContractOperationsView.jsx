@@ -49,7 +49,7 @@ class Item extends React.Component {
                 <FunctionInputs
                     button='Generate'
                     inputs={this.props.method.inputs}
-                    ethInput={this.props.method.payable}
+                    ethInput={this.props.method.stateMutability === "payable"}
                     onClick={this.handleInputsClick}
                 />
 
@@ -87,7 +87,7 @@ class ContractOperationsView extends React.Component {
     render() {
         //select only non-constant methods
         let methods = this.props.contract._jsonInterface.filter(
-            item => item.constant === false
+            item => item.stateMutability === "payable" || item.stateMutability === "nonpayable"
         );
 
         return (
