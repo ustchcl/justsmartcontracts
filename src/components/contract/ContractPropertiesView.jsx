@@ -49,7 +49,7 @@ class ContractPropertiesView extends React.Component {
     fetchProperties() {
         //select only constant methods with no parameters
         let methods = this.props.contract._jsonInterface.filter(
-            (item) => (item.stateMutability === "nonpayable" || item.stateMutability === "payable") && item.inputs.length == 0
+            (item) => (item.stateMutability !== "nonpayable" && item.stateMutability !== "payable") && item.inputs.length == 0
         );
 
         let promises = methods.map((method) =>
