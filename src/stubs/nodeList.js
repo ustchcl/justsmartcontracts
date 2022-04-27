@@ -8,14 +8,14 @@ let nodeList = [
             {
                 name: "主网",
                 key: "币安_主网",
-                endpoint: "https://api.myetherapi.com/eth",
-                id: "1",
+                endpoint: "https://bsc-dataseed1.ninicoin.io",
+                id: "56",
             },
             {
                 name: "测试",
                 key: "币安_测试",
-                endpoint: "https://api.myetherapi.com/rop",
-                id: "3",
+                endpoint: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+                id: "97",
             }
         ]
     },
