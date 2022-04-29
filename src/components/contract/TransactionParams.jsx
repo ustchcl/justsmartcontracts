@@ -20,7 +20,7 @@ const offlineMode = 'offline';
  * onSign - function that receives Ethereum tx object {from, to, data, value, ...}
  */
 class TransactionParams extends React.Component {
-    constructor(props) {
+    constructor (props) {
         super(props);
 
         this.currentTxId = null;
@@ -34,6 +34,7 @@ class TransactionParams extends React.Component {
             nonce: 0,
             gas: 0,
             error: null,
+            type: "2",
         };
 
         this.handleSignClick = this.handleSignClick.bind(this);
@@ -55,7 +56,7 @@ class TransactionParams extends React.Component {
         this.createUnsignedTx = this.createUnsignedTx.bind(this);
     }
 
-    static getDerivedStateFromProps(nextProps, prevState) {
+    static getDerivedStateFromProps (nextProps, prevState) {
         const id = utils.getMethodId(nextProps.tx);
         if (id !== prevState.prevId) {
             return {
@@ -66,18 +67,18 @@ class TransactionParams extends React.Component {
         return null;
     }
 
-    componentDidMount() {
+    componentDidMount () {
         //update estimated gas
         this.loadTxData(utils.getMethodId(this.props.tx));
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate (prevProps, prevState) {
         if (this.state.gas === 0) {
             this.loadTxData(utils.getMethodId(this.props.tx));
         }
     }
 
-    loadTxData(id) {
+    loadTxData (id) {
         if (
             utils.isEthAddress(this.state.fromAddress) &&
             id !== this.currentTxId
@@ -88,11 +89,11 @@ class TransactionParams extends React.Component {
         }
     }
 
-    componentWillUnmount() {
+    componentWillUnmount () {
         this.currentTxId = null;
     }
 
-    updateNonce(address) {
+    updateNonce (address) {
         this.props.tx._parent.web3.eth
             .getTransactionCount(address)
             .then((nonce) => {
@@ -100,7 +101,7 @@ class TransactionParams extends React.Component {
             });
     }
 
-    updateGas(address) {
+    updateGas (address) {
         this.props.tx
             .estimateGas({ from: address, value: this.props.ethValue })
             .then((gas) => {
@@ -112,10 +113,12 @@ class TransactionParams extends React.Component {
             });
     }
 
-    createUnsignedTx() {
+    createUnsignedTx () {
         const toAddress = this.props.tx._parent._address
             ? { to: this.props.tx._parent._address }
             : {};
+
+        const gasOptions = this.state.type === "2" ? { maxFeePerGas: utils.toHex(this.state.maxFeePerGas),  maxPriorityFeePerGas: utils.toHex(this.state.maxPriorityFeePerGas), } : {}
 
         return {
             ...{
@@ -126,41 +129,47 @@ class TransactionParams extends React.Component {
                 value: utils.toHex(this.props.ethValue || 0),
                 chainId: this.props.tx._parent.chainId,
                 maxFeePerGas: utils.toHex(this.state.maxFeePerGas),
-                maxPriorityFeePerGas: utils.toHex(this.state.maxPriorityFeePerGas),
             },
+            ...gasOptions,
             ...toAddress,
         };
     }
 
-    getDownloadFileName() {
+    getDownloadFileName () {
         return this.props.tx._method.name + '.txt';
     }
 
-    getDownloadFileContent() {
+    getDownloadFileContent () {
         let tx = this.createUnsignedTx();
         delete tx.chainId;
         return JSON.stringify(tx);
     }
 
-    handleSignClick() {
+    handleSignClick () {
         if (this.props.onSign) {
             this.props.onSign(this.createUnsignedTx());
         }
     }
 
-    handleGasChange(e) {
+    handleGasChange (e) {
         this.setState({
             gas: e.target.value,
         });
     }
 
-    handleNonceChange(e) {
+    handleTypeChange (e) {
+        this.setState({
+            type: e.target.value,
+        });
+    }
+
+    handleNonceChange (e) {
         this.setState({
             nonce: e.target.value,
         });
     }
 
-    handleFromAddressChanged(value, isEthAddress) {
+    handleFromAddressChanged (value, isEthAddress) {
         this.setState({
             fromAddress: value,
         });
@@ -176,25 +185,25 @@ class TransactionParams extends React.Component {
         }
     }
 
-    handleMaxFeePerGasChange(maxFeePerGas) {
+    handleMaxFeePerGasChange (maxFeePerGas) {
         this.setState({
             maxFeePerGas,
         });
     }
 
-    handleMaxPriorityFeePerGasChange(maxPriorityFeePerGas) {
+    handleMaxPriorityFeePerGasChange (maxPriorityFeePerGas) {
         this.setState({
             maxPriorityFeePerGas,
         });
     }
 
-    handleModeChange(e) {
+    handleModeChange (e) {
         this.setState({
             mode: e.target.value,
         });
     }
 
-    handleMetamaskButton() {
+    handleMetamaskButton () {
         metamask
             .decrypt()
             .then((fromAddress) => {
@@ -208,7 +217,7 @@ class TransactionParams extends React.Component {
             });
     }
 
-    getForm() {
+    getForm () {
         const colLayout = {
             span: 12,
         };
@@ -281,28 +290,39 @@ class TransactionParams extends React.Component {
                             />
                         </Form.Item>
                     </Col>
-                </Row>
-
-                <Row {...rowLayout}>
                     <Col {...colLayout}>
-                        <Form.Item label="Max Fee Per Gas">
-                            <EtherInput
-                                value={this.state.maxFeePerGas}
-                                defaultMode="gwei"
-                                onChange={this.handleMaxFeePerGasChange}
-                            />
-                        </Form.Item>
-                    </Col>
-                    <Col {...colLayout}>
-                        <Form.Item label="Max Priority Fee Per Gas">
-                            <EtherInput
-                                value={this.state.maxPriorityFeePerGas}
-                                defaultMode="gwei"
-                                onChange={this.handleMaxPriorityFeePerGasChange}
+                        <Form.Item label="Type">
+                            <Input
+                                value={this.state.type}
+                                onChange={this.handleTypeChange.bind(this)}
                             />
                         </Form.Item>
                     </Col>
                 </Row>
+                {
+                    this.state.type === "2" ?
+                        (<Row {...rowLayout}>
+                            <Col {...colLayout}>
+                                <Form.Item label="Max Fee Per Gas">
+                                    <EtherInput
+                                        value={this.state.maxFeePerGas}
+                                        defaultMode="gwei"
+                                        onChange={this.handleMaxFeePerGasChange}
+                                    />
+                                </Form.Item>
+                            </Col>
+                            <Col {...colLayout}>
+                                <Form.Item label="Max Priority Fee Per Gas">
+                                    <EtherInput
+                                        value={this.state.maxPriorityFeePerGas}
+                                        defaultMode="gwei"
+                                        onChange={this.handleMaxPriorityFeePerGasChange}
+                                    />
+                                </Form.Item>
+                            </Col>
+                        </Row>)
+                        : <></>
+                }
 
                 <Form.Item label="Data">
                     <Input.TextArea
@@ -330,7 +350,7 @@ class TransactionParams extends React.Component {
         );
     }
 
-    render() {
+    render () {
         return (
             <Card title="Transaction Details" size="small">
                 {this.getForm()}
